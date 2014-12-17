@@ -1,0 +1,11 @@
+analysis/*
+.sl64_gcc447/
+logfile/
+output_fp/
+output_exp/
+!analysis/*.C
+!analysis/*.txt
+check.sh
+*.root
+.*
+!.gitignore
