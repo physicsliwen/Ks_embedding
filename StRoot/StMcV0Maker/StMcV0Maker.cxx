@@ -178,7 +178,7 @@ void StMcV0Maker::initParam(){
 	//cutAbsDausPtShoulderDiffLeEq = 1.2;
 	//cutDau1DecAngGr = 0.;
 	//cutDau2DecAngGr = 0.;
-	cutV0rdotpGr  = -99999.;
+	cutV0rdotpGr  = 0;//-99999.;
 	cutDcaV0Le    = 5.0;
 	cutV0DecLenGrEq =0.0;
    }
@@ -616,6 +616,7 @@ if ( !event->triggerIdCollection()->nominal()->isTrigger(350003) && !event->trig
 	     const StMcTrack* parent = (*mcVertexIt)->parent();
 	     if (!parent) continue;
 	     if(parent->geantId()!=mGeantIDV0)continue;
+             std::cout<<">>>>>>>>>>>>>>>>>>>>>Got the Kshort<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
 	     StSPtrVecMcTrack& Daughters = (*mcVertexIt)->daughters();
 	     StMcTrack *Proton = NULL;
 	     StMcTrack *Pion = NULL;

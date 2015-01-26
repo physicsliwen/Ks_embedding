@@ -163,7 +163,7 @@ void cuts_fp_ks(int nlist, int block){
 	if (ientry < 0) break;
 	nb = t->GetEntry(jentry);   nbytes += nb;
 
-	if(jentry%10000==0)cout<<jentry<<" "<<nentries<<endl;
+	if(jentry%100==0)cout<<jentry<<" "<<nentries<<endl;
 
 	//if(fabs(dst.primvertexX*dst.primvertexX+dst.primvertexY*dst.primvertexY)>4.0)continue;
 	if(fabs(dst.primvertexZ)>40.0)continue;
@@ -210,7 +210,7 @@ void cuts_fp_ks(int nlist, int block){
 	   Double_t wgt = getWeight(centbin, dst.mcv0pt[i]);
 	   wMcCount[centbin][ptbin] += wgt; 
 	   w2McCount[centbin][ptbin] += wgt*wgt; 
-           //std::cout<<w2McCount[centbin][ptbin]<<std::endl; 
+           //std::cout<<"Got One!"<<std::endl; 
 	}
         //std::cout<<"done mc"<<jentry<<std::endl;	
 	for(Int_t i = 0; i < dst.nv0; i++){
@@ -364,7 +364,6 @@ Double_t getWeight(Int_t cent, Float_t pt){
    dexp.SetParameters(1.10655e+02,5.10130e-02,5.98316e-01,2.83653e-01);
    wgt = dexp.Eval(pt);
 */
-	
    return wgt;
 }
 
