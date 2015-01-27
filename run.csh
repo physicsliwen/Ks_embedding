@@ -20,4 +20,5 @@ cd /global/homes/l/lwen1990/pwg/embedding/Ks0
 #root4star -b -q reconstruct_mcv0.C\(\"ksfp_100_144.list\",$1,1\) 
 #root4star -b -q reconstruct_mcv0.C\(\"alafp_101_141.list\",$1,1\) 
 #root4star -b -q reconstruct_mcv0.C\(\"Ks0_fp.list\",$1,1\)
-root4star -b -q reconstruct_mcv0.C\(\"auau200GeV_run11_ks_flat.list\",$1,1\)
+#root4star -b -q reconstruct_mcv0.C\(\"auau200GeV_run11_ks_flat.list\",$1,1\)
+root4star -b -q reconstruct_mcv0.C\(\"auau200GeV_run11_ks_exp.list\",$1,1\)

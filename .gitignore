@@ -9,5 +9,5 @@ check.sh
 *.root
 .*
 !.gitignore
-submit.sh.o*
-submit.sh.e*
+submit_ks.sh.o*
+submit_ks.sh.e*
