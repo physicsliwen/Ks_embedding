@@ -5,7 +5,7 @@
 #include "StRoot/StMcXiMaker/StXiType.h"
 
 //void reconstruct_mcv0(TString InputFileList, Int_t Nlist, Int_t Block = 50, Int_t nEvents = 0, TString OutputDir = "output_fp/");
-void reconstruct_mcv0(TString InputFileList, Int_t Nlist, Int_t Block = 50, Int_t nEvents = 0, TString OutputDir = "output_exp/");
+void reconstruct_mcv0(TString InputFileList, Int_t Nlist, Int_t Block = 50, Int_t nEvents = 0, TString OutputDir = "output_fp/");
 
 void reconstruct_mcv0(TString InputFileList, Int_t Nlist, Int_t Block, Int_t nEvents, TString OutputDir) 
 {

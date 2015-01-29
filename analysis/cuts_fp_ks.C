@@ -52,7 +52,7 @@ void cuts_fp_ks(int nlist, int block){
    gROOT->LoadMacro("v0dst.C+");
 #endif
 
-   TChain * t = ChainThem("./picodst_fp_test.list","McV0PicoDst",nlist,block);
+   TChain * t = ChainThem("./picodst_ks_exp.list","McV0PicoDst",nlist,block);
    if(!t){ cout<<"ERROR: no files are added to the chain!"<<endl; return; }
 
    //bound them together
@@ -364,7 +364,8 @@ Double_t getWeight(Int_t cent, Float_t pt){
    dexp.SetParameters(1.10655e+02,5.10130e-02,5.98316e-01,2.83653e-01);
    wgt = dexp.Eval(pt);
 */
-   return wgt;
+   //return wgt;
+   return 1;
 }
 
 TChain* ChainThem(char* filelist, char* treename, int nlist, int block){
