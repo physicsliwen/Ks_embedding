@@ -237,7 +237,8 @@ void cuts_fp_ks(int nlist, int block){
                 //std::cout<<"so far so good=====0"<<std::endl;
                 if(fabs(dst.v0mass[i]-0.497614) > 0.01) continue;
                 //std::cout<<"so far so good=====1"<<std::endl;
-                if(dst.v0pt[i] < 0.02 || dst.v0pt[i] > 2.0) continue;
+                //if(dst.v0pt[i] < 0.02 || dst.v0pt[i] > 2.0) continue;
+                if(dst.v0pt[i] < 0.02) continue;
                 if(fabs(dst.v0eta[i]) > 1.0) continue;
                 if(fabs(dst.v0rapidity[i]) > 0.5) continue;
                 if(dst.v0declen[i] < 4.0) continue;
@@ -332,8 +333,8 @@ void cuts_fp_ks(int nlist, int block){
 	   Float_t wRcNoCount = wMcCount[i][j]-wRcCount[i][j];
 	   Float_t w2RcNoCount = w2McCount[i][j]-w2RcCount[i][j];
 	   Float_t efferr = sqrt(w2RcCount[i][j]*(wRcNoCount-wRcOutCount[i][j])*(wRcNoCount-wRcOutCount[i][j])+w2RcNoCount*(wRcCount[i][j]+wRcOutCount[i][j])*(wRcCount[i][j]+wRcOutCount[i][j]) + w2RcOutCount[i][j]*wMcCount[i][j]*wMcCount[i][j])/wMcCount[i][j]/wMcCount[i][j];
-	   cout<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<wRcOutCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<w2RcOutCount[i][j]<<" "<<eff<<" "<<efferr/eff<<endl;
-	   oweight<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<eff<<" "<<efferr/eff<<endl;
+	   cout<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<wRcOutCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<w2RcOutCount[i][j]<<" "<<eff<<endl;//" "<<efferr/eff<<endl;
+	   oweight<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<eff<<" "<<efferr<<endl;///eff<<endl;
 	}
 
    oweight.close();

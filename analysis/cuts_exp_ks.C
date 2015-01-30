@@ -32,11 +32,12 @@ string stringify(int x){ ostringstream o; o << x; return o.str(); }
 TChain* ChainThem(char* filelist, char* treename, int nlist = 0, int block = 100);
 
 const int kGroup   = 1;
-const int kCentBin = 7;
+//const int kCentBin = 7;
+const int kCentBin = 9;
 const int kPtBin = 21;
 //const int kPtBin = 14;
 Double_t grpbd[kGroup+1]={0.,13060000.};
-Float_t centbd[kGroup][kCentBin+1]={{6.5,23.5,66.5,102.5,152.5,220.5,263.5,20000.}}; //from H. Masui
+//Float_t centbd[kGroup][kCentBin+1]={{6.5,23.5,66.5,102.5,152.5,220.5,263.5,20000.}}; //from H. Masui
 //Float_t centbd[kGroup][kCentBin+1]={{0.5,6.5,11.5,200.},{0.5,7.5,12.5,200.},{0.5,6.5,10.5,200.}}; //from H. Masui
 Float_t  ptbd[kPtBin+1]={0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.3,2.6,3.0,3.4,3.8,4.2,4.8,5.4,6.0,7.0,8.0,10.0};
 //Float_t  ptbd[kPtBin+1]={0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.5,3.0,3.5,4.0,4.7};
@@ -51,18 +52,19 @@ void cuts_exp_ks(int nlist, int block){
    gROOT->LoadMacro("v0dst.C+");
 #endif
 
-   //TChain * t = ChainThem("./picodst_exp.list","McV0PicoDst",nlist,block);
-   TChain * t = ChainThem("./picodst_fp_test.list","McV0PicoDst",nlist,block);
+   TChain * t = ChainThem("./picodst_ks_exp.list","McV0PicoDst",nlist,block);
    if(!t){ cout<<"ERROR: no files are added to the chain!"<<endl; return; }
 
    //bound them together
    v0dst dst(t);
 
    //histograms
-   TString Dir("");
-   TString Name("mcks_exp");
-   //TFile ohm(Dir+Name+stringify(nlist)+".cuts.histo.root","recreate");
-   TFile ohm(Dir+Name+".cuts.histo.root","recreate");
+   //TString Dir("");
+   string Dir ="";
+   //TString Name("mcks_exp");
+   string Name = "mcks_exp";
+   string temp = Dir+Name+stringify(nlist)+".cuts.histo.root";
+   TFile ohm(temp.c_str(),"recreate");
 
    Float_t pdgmass = 0.497614;
    Float_t masswidth = 0.07+0.01;
@@ -97,7 +99,7 @@ void cuts_exp_ks(int nlist, int block){
    TH1F * hmsinth = new TH1F("hmsinth","xi sinth", 200,0,0.3);
    TH1F * hmTrack1nHits = new TH1F("hmTrack1nHits","nHits of Track 1", 100,0,100);
    TH1F * hmTrack2nHits = new TH1F("hmTrack2nHits","nHits of Track 2", 100,0,100);
- 
+   
    TH2I * hmSumMcV0 = new TH2I("hmSumMcV0", "MC V0 counts in different cent and pt bin", kCentBin,0,kCentBin,kPtBin,0,kPtBin);
    TH2I * hmSumRcV0 = new TH2I("hmSumRcV0", "RC V0 counts in different cent and pt bin", kCentBin,0,kCentBin,kPtBin,0,kPtBin);
 
@@ -113,16 +115,17 @@ void cuts_exp_ks(int nlist, int block){
    for(Int_t iIM=0; iIM<kCentBin; iIM++){
 	//TString hName("hmInvMass");
 	//TString hTitle("Invariant mass for ");
-        string hName = "hmInvMass";
-        string hTitle = "Invariant mass for";
+	string hName = "hmInvMass";
+	string hTitle = "Invariant mass for ";
+
 	hName = hName + "Cent" + stringify(iIM);
 	hTitle = hTitle + "centrality bin " + stringify(iIM);
 	hmIMCent[iIM] = new TH1F(hName.c_str(), hTitle.c_str(), 200, pdgmass-masswidth, pdgmass+masswidth);
 	for(Int_t jIM=0; jIM<kPtBin; jIM++){
 	   //TString hName("hmInvMass");
-	   //TString hTitle("Invariant mass for ");
 	   string hName = "hmInvMass";
-	   string hTitle = "Invariant mass for";
+	   //TString hTitle("Invariant mass for ");
+	   string hTitle = "Invariant mass for ";
 	   hName = hName + "Cent" + stringify(iIM) + "Pt" + stringify(jIM);
 	   hTitle = hTitle + "centrality bin " + stringify(iIM) + " pt bin " + stringify(jIM);
 	   hmIM[iIM][jIM] = new TH1F(hName.c_str(), hTitle.c_str(), 200, pdgmass-masswidth, pdgmass+masswidth);
@@ -144,9 +147,9 @@ void cuts_exp_ks(int nlist, int block){
       string hName = "hmCent";
       hName = hName + stringify(i);
       //TString hTitle("Centrality bin finder for group ");
-      string hTitle = "Centrality bin finder for group";
+      string hTitle = "Centrality bin finder for group ";
       hTitle = hTitle + stringify(i);
-      hmCent[i] = new TH1F(hName.c_str(),hTitle.c_str(),kCentBin,centbd[i]);
+      //hmCent[i] = new TH1F(hName,hTitle,kCentBin,centbd[i]);
    }
    TH1F * hmPt = new TH1F("hmPt","Pt bin finder",kPtBin,ptbd);
 
@@ -155,24 +158,27 @@ void cuts_exp_ks(int nlist, int block){
    //event loop (copy from wrapper class' Loop method
    Long64_t nentries = t->GetEntriesFast();
    Long64_t nbytes = 0, nb = 0;
-   for (Long64_t jentry=0; jentry<nentries;jentry++) {
+   for(Long64_t jentry=0; jentry<nentries;jentry++) {
 	Long64_t ientry = dst.LoadTree(jentry);
 	if (ientry < 0) break;
 	nb = t->GetEntry(jentry);   nbytes += nb;
 
-	if(jentry%10000==0)cout<<jentry<<" "<<nentries<<endl;
+	if(jentry%100==0)cout<<jentry<<" "<<nentries<<endl;
 
-	if(fabs(dst.primvertexX*dst.primvertexX+dst.primvertexY*dst.primvertexY)>4.0)continue;
-	if(fabs(dst.primvertexZ)>50.0)continue;
+	//if(fabs(dst.primvertexX*dst.primvertexX+dst.primvertexY*dst.primvertexY)>4.0)continue;
+	if(fabs(dst.primvertexZ)>40.0)continue;
 	//fill histograms
 	//Int_t centbin = getCentBin(dst.nrefmult);
 	Int_t grp = hmGroup->FindBin(dst.runnumber)-1;
       //cout<<dst.runnumber<<" "<<grp<<endl;
       hmGroup->Fill(dst.runnumber);
       if(grp<0 || grp >= kGroup) continue;
-      Int_t centbin = hmCent[grp]->FindBin(dst.nrefmult)-1;
-      hmCent[grp]->Fill(dst.nrefmult);
-      if(centbin==kCentBin)centbin = -1;
+      //Int_t centbin = hmCent[grp]->FindBin(dst.nrefmult)-1;
+      int centbin = dst.centBin9;
+      //cout<<"============this is centbin "<<centbin<<std::endl;
+      //if(centbin != 0) std::cout<<"=====================this is centbin "<< centbin <<std::endl;
+      //hmCent[grp]->Fill(dst.nrefmult);
+      //if(centbin==kCentBin)centbin = -1;
 
 
 	hmNRefMult->Fill(dst.nrefmult);
@@ -182,22 +188,32 @@ void cuts_exp_ks(int nlist, int block){
 	//hmNRcXi->Fill(dst.nxi);
 	//hmNMcRcXi->Fill(dst.nmcxi,dst.nxi);
 
+        // Initialize the refmultcorrector 
+        //refmultCorrUtil -> init(dst.runnumber);
+        //refmultCorrUtil -> initEvent(dst.nrefmult, dst.primvertexZ);
+        //const Int_t cent9 = refmultCorrUtil -> getCentralityBin9();
+           //std::cout<<"done event"<<jentry<<std::endl;
 	for(Int_t i=0;i<dst.nmcv0;i++){
 	   mcidvec[i] = dst.mcv0id[i];
 	   if(fabs(dst.mcv0rapidity[i])>0.5)continue;//the origin code
 //	   if(fabs(dst.mcv0rapidity[i])>1.0)continue;//I change
+
+
 	   Int_t ptbin = hmPt->FindBin(dst.mcv0pt[i])-1;
 	   if(ptbin==kPtBin)ptbin = -1;
-	   if(centbin<0 || ptbin<0)continue;
+           //std::cout<<ptbin<<" pt bin"<<std::endl;
+           //std::cout<<centbin<<" cent bin"<<std::endl;
+	   if(centbin < 0 || ptbin < 0)continue;
 	   //hmMcXiPt->Fill(dst.mcv0pt[i]);
 	   //hmMcXiRap->Fill(dst.mcv0rapidity[i]);
 	   //hmSumMcXi->Fill(centbin,ptbin);
 	   Double_t wgt = getWeight(centbin, dst.mcv0pt[i]);
 	   wMcCount[centbin][ptbin] += wgt; 
 	   w2McCount[centbin][ptbin] += wgt*wgt; 
+           //std::cout<<"Got One!"<<std::endl; 
 	}
-	
-	for(Int_t i=0;i<dst.nv0;i++){
+        //std::cout<<"done mc"<<jentry<<std::endl;	
+	for(Int_t i = 0; i < dst.nv0; i++){
 	   /*
 	   hmInvMass->Fill(dst.ximass[i]);
 	   hmV0InvMass->Fill(dst.v0mass[i]);
@@ -216,13 +232,24 @@ void cuts_exp_ks(int nlist, int block){
 
 //	   if(fabs(dst.v0rapidity[i])>1.0)continue;
 
-                if(fabs(dst.v0rapidity[i])>0.5)continue;
-                if(dst.v0declen[i]<3)continue;
-                if(dst.v0dca[i]>0.7)continue;
-                if(dst.dau1dca[i]<1.2)continue;
-                if(dst.dau2dca[i]<1.2)continue;
-                if(dst.dca1to2[i]>0.8)continue;
-
+   //Liwen, For 200GeV Ks0 2011... 
+                 
+                //std::cout<<"so far so good=====0"<<std::endl;
+                if(fabs(dst.v0mass[i]-0.497614) > 0.01) continue;
+                //std::cout<<"so far so good=====1"<<std::endl;
+                //if(dst.v0pt[i] < 0.02 || dst.v0pt[i] > 2.0) continue;
+                //if(dst.v0pt[i] < 0.02) continue;
+                if(fabs(dst.v0eta[i]) > 1.0) continue;
+                if(fabs(dst.v0rapidity[i]) > 0.5) continue;
+                if(dst.v0declen[i] < 4.0) continue;
+                if(dst.v0dca[i] > 0.7) continue;
+                //std::cout<<"so far so good"<<std::endl;
+                //if(fabs(dst.dau1nsigma[i]) > 3.0) continue; //both are zero
+                //if(fabs(dst.dau2nsigma[i]) > 3.0) continue;
+                if(dst.dau1dca[i]<1.2) continue;
+                if(dst.dau2dca[i]<1.2) continue;
+                if(dst.dca1to2[i]>0.8) continue;
+         //cout<<"Got one after topological cuts" <<endl;
 
 /*
                         if(centbin==3){if(dst.v0dca[i]>0.75)continue;}
@@ -239,6 +266,7 @@ void cuts_exp_ks(int nlist, int block){
 	   double rdotp = xv0toPV.dot(pv0) ;
 	   if(rdotp<=0)continue;
 
+           //std::cout<<"Got one after topolotical cuts"<<std::endl;
 /*	   //veto lambda //for Ks analysis
 	   double mMass1=0.93827;
 	   double mMass2=0.13957;
@@ -256,7 +284,7 @@ void cuts_exp_ks(int nlist, int block){
 	   //find the MC v0 index according to their ids
 	   int ind = -1;
 	   for(int ik=0;ik<dst.nmcv0;ik++)
-		if(mcidvec[ik]==dst.v0mcid[i]){ind = ik; break;}
+		if(mcidvec[ik]==dst.v0mcid[i]){ind = ik; break;}// find out the corresponding mc original accurate event
 
 	   hmRcV0Pt->Fill(dst.v0pt[i]-dst.mcv0pt[ind]);
 	   hmRcV0Rap->Fill(dst.v0rapidity[i]-dst.mcv0rapidity[ind]);
@@ -270,9 +298,12 @@ void cuts_exp_ks(int nlist, int block){
 	   
 	   Double_t wgtrc = getWeight(centbin, dst.mcv0pt[ind]);
 	   Int_t mcptbin = hmPt->FindBin(dst.mcv0pt[ind])-1;
+           //std::cout<<"Got One!"<<std::endl;
 	   if(mcptbin == ptbin){
 		wRcCount[centbin][ptbin] += wgtrc;
+		//std::cout<<"real event "<<wRcCount[centbin][ptbin]<<std::endl;
 		w2RcCount[centbin][ptbin] += wgtrc*wgtrc;
+		//std::cout<<"real event "<<w2RcCount[centbin][ptbin]<<std::endl;
 	   }
 	   else{
 		wRcOutCount[centbin][ptbin] += wgtrc;
@@ -301,9 +332,9 @@ void cuts_exp_ks(int nlist, int block){
 	   Float_t eff = (wRcCount[i][j]+wRcOutCount[i][j])/wMcCount[i][j];
 	   Float_t wRcNoCount = wMcCount[i][j]-wRcCount[i][j];
 	   Float_t w2RcNoCount = w2McCount[i][j]-w2RcCount[i][j];
-	   Float_t efferr = sqrt(w2RcCount[i][j]*(wRcNoCount-wRcOutCount[i][j])*(wRcNoCount-wRcOutCount[i][j])+w2RcNoCount*(wRcCount[i][j]+wRcOutCount[i][j])*(wRcCount[i][j]+wRcOutCount[i][j])+w2RcOutCount[i][j]*wMcCount[i][j]*wMcCount[i][j])/wMcCount[i][j]/wMcCount[i][j];
-	   cout<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<wRcOutCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<w2RcOutCount[i][j]<<" "<<eff<<" "<<efferr/eff<<endl;
-	   oweight<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<eff<<" "<<efferr/eff<<endl;
+	   Float_t efferr = sqrt(w2RcCount[i][j]*(wRcNoCount-wRcOutCount[i][j])*(wRcNoCount-wRcOutCount[i][j])+w2RcNoCount*(wRcCount[i][j]+wRcOutCount[i][j])*(wRcCount[i][j]+wRcOutCount[i][j]) + w2RcOutCount[i][j]*wMcCount[i][j]*wMcCount[i][j])/wMcCount[i][j]/wMcCount[i][j];
+	   cout<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<wRcOutCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<w2RcOutCount[i][j]<<" "<<eff<<endl;//" "<<efferr/eff<<endl;
+	   oweight<<i<<" "<<j<<" "<<wMcCount[i][j]<<" "<<wRcCount[i][j]<<" "<<w2McCount[i][j]<<" "<<w2RcCount[i][j]<<" "<<eff<<" "<<efferr<<endl;///eff<<endl;
 	}
 
    oweight.close();
@@ -318,13 +349,13 @@ Double_t getWeight(Int_t cent, Float_t pt){
    //parameterize levy function to supply the weight
    
    static TF1 levy("levy","x*(([0]*([1]-1)*([1]-2))/(2.0*3.141592654*[1]*[2]*([1]*[2]+0.497614*([1]-2))))/(1+((TMath::Sqrt((x*x)+(0.497614*0.497614))-0.497614)/([1]*[2])))^[1]",0.,8.);
-ifstream ipara("Levy_parameter_Ks0.txt");
+   ifstream ipara("Levy_parameter_Ks0.txt");
    Double_t yield[kCentBin]={0};
    Double_t pwindex[kCentBin]={0};
    Double_t slope[kCentBin]={0};
-for(int i = 0;i<kCentBin;i++)
+   for(int i = 0;i<kCentBin;i++)
         ipara>>yield[i]>>pwindex[i]>>slope[i];
-ipara.close();
+   ipara.close();
    levy.SetParameters(yield[cent],pwindex[cent],slope[cent]);
  
    wgt = levy.Eval(pt);
@@ -334,8 +365,10 @@ ipara.close();
    dexp.SetParameters(1.10655e+02,5.10130e-02,5.98316e-01,2.83653e-01);
    wgt = dexp.Eval(pt);
 */
-wgt = wgt*exp(pt/0.35)/pt;	
+   //return wgt;
+   wgt = 1*exp(pt/0.35)/pt;	
    return wgt;
+   //return 1;
 }
 
 TChain* ChainThem(char* filelist, char* treename, int nlist, int block){
